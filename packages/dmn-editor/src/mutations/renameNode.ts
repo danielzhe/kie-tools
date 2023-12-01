@@ -3,6 +3,7 @@ import {
   DMN15__tGroup,
   DMN15__tTextAnnotation,
 } from "@kie-tools/dmn-marshaller/dist/schemas/dmn-1_5/ts-gen/types";
+import { FeelVariables } from "@kie-tools/dmn-feel-antlr4-parser";
 
 export function renameDrgElement({
   definitions,
@@ -15,6 +16,8 @@ export function renameDrgElement({
 }) {
   const trimmedNewName = newName.trim();
 
+  const feelVariables = new FeelVariables(definitions);
+
   const drgElement = definitions.drgElement![index];
 
   drgElement["@_name"] = trimmedNewName;
@@ -24,7 +27,8 @@ export function renameDrgElement({
     drgElement.variable!["@_name"] = trimmedNewName;
   }
 
-  // FIXME: Daniel --> Here we need to update all FEEL expression that were using this node's name as a variable.
+  feelVariables.renameVariable(drgElement["@_id"] ?? "", trimmedNewName);
+  feelVariables.applyChangesToDefinition();
 }
 
 export function renameGroupNode({

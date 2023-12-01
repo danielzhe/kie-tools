@@ -42,10 +42,10 @@ import {
   DMN15__tQuantified,
   DMN15__tRelation,
 } from "@kie-tools/dmn-marshaller/dist/schemas/dmn-1_5/ts-gen/types";
-import { Expression } from "./VariableOccurrence";
 import { DmnLatestModel, getMarshaller } from "@kie-tools/dmn-marshaller";
+import { Expression } from "./Expression";
 
-type DmnLiteralExpression = { __$$element: "literalExpression" } & DMN15__tLiteralExpression;
+export type DmnLiteralExpression = { __$$element: "literalExpression" } & DMN15__tLiteralExpression;
 type DmnInvocation = { __$$element: "invocation" } & DMN15__tInvocation;
 type DmnDecisionTable = { __$$element: "decisionTable" } & DMN15__tDecisionTable;
 type DmnContext = { __$$element: "context" } & DMN15__tContext;
@@ -74,14 +74,21 @@ export class VariablesRepository {
   private readonly variablesIndexedByUuid: Map<string, VariableContext>;
   private readonly expressionsIndexedByUuid: Map<string, Expression>;
   private readonly dataTypes: Map<string, DataType>;
+  private readonly dataTypeIndexedByUuid: Map<string, DataType>;
+  private readonly importedVariables: Map<string, Array<VariableContext>>;
+  private readonly importedDataTypes: Map<string, Array<DataType>>;
   private currentVariablePrefix: string;
   private currentUuidPrefix: string;
 
-  constructor(dmnDefinitions: DmnDefinitions, externalDefinitions: Map<string, DmnLatestModel>) {
+  constructor(dmnDefinitions: DmnDefinitions, externalDefinitions?: Map<string, DmnLatestModel>) {
     this.dataTypes = new Map<string, DataType>();
     this.variablesIndexedByUuid = new Map<string, VariableContext>();
     this.expressionsIndexedByUuid = new Map<string, Expression>();
-    this.loadImportedVariables(dmnDefinitions, externalDefinitions);
+    this.dataTypeIndexedByUuid = new Map<string, DataType>();
+    this.importedVariables = new Map<string, Array<VariableContext>>();
+    this.importedDataTypes = new Map<string, Array<DataType>>();
+
+    this.loadImportedVariables(dmnDefinitions, externalDefinitions ?? new Map<string, DmnLatestModel>());
 
     this.currentVariablePrefix = "";
     this.currentUuidPrefix = "";
@@ -106,12 +113,55 @@ export class VariablesRepository {
 
   public renameVariable(variableUuid: string, newName: string) {
     const variableContext = this.variablesIndexedByUuid.get(variableUuid);
+
     if (variableContext) {
       for (const expression of variableContext.variable.expressions.values()) {
         expression.renameVariable(variableContext.variable, newName);
       }
 
       variableContext.variable.value = newName;
+    } else {
+      const dataType = this.dataTypeIndexedByUuid.get(variableUuid);
+      if (dataType) {
+        for (const expression of dataType.source.expressions.values()) {
+          expression.renameVariable(dataType.source, newName);
+        }
+        dataType.source.value = newName;
+      }
+    }
+  }
+
+  public renameImport(oldName: string, newImportName: string) {
+    const importedVariables = this.importedVariables.get(oldName);
+
+    if (importedVariables) {
+      for (const imported of importedVariables) {
+        // funciona pq o replace substitui só a primeira ocorrência
+        const newVariableName = imported.variable.value.replace(oldName + ".", newImportName + ".");
+        for (const expression of imported.variable.expressions.values()) {
+          expression.renameVariable(imported.variable, newVariableName);
+        }
+
+        imported.variable.value = newVariableName;
+      }
+
+      this.importedVariables.delete(oldName);
+      this.importedVariables.set(newImportName, importedVariables);
+    }
+
+    const importedDataTypes = this.importedDataTypes.get(oldName);
+    if (importedDataTypes) {
+      for (const imported of importedDataTypes) {
+        const newVariableName = imported.source.value.replace(oldName + ".", newImportName + ".");
+
+        for (const expression of imported.source.expressions.values()) {
+          expression.renameVariable(imported.source, newVariableName);
+        }
+        imported.source.value = newVariableName;
+      }
+
+      this.importedDataTypes.delete(oldName);
+      this.importedDataTypes.set(newImportName, importedDataTypes);
     }
   }
 
@@ -173,13 +223,27 @@ export class VariablesRepository {
     definitions.itemDefinition?.forEach((itemDefinition) => {
       const dataType = this.createDataType(itemDefinition);
 
+      this.dataTypeIndexedByUuid.set(dataType.uuid, dataType);
+      this.addImportedDataType(dataType);
       itemDefinition.itemComponent?.forEach((itemComponent) => {
         const innerType = this.createInnerType(itemComponent);
+        this.dataTypeIndexedByUuid.set(innerType.uuid, innerType);
+        this.addImportedDataType(innerType);
         dataType.properties.set(innerType.name, innerType);
       });
 
       this.dataTypes.set(dataType.name, dataType);
     });
+  }
+
+  private addImportedDataType(dataType: DataType) {
+    if (this.currentVariablePrefix.length != 0) {
+      if (!this.importedDataTypes.has(this.currentVariablePrefix)) {
+        this.importedDataTypes.set(this.currentVariablePrefix, []);
+      }
+
+      this.importedDataTypes.get(this.currentVariablePrefix)?.push(dataType);
+    }
   }
 
   private createVariables(definitions: DmnDefinitions) {
@@ -298,6 +362,14 @@ export class VariablesRepository {
       typeRef
     );
 
+    if (this.currentVariablePrefix.length != 0) {
+      if (!this.importedVariables.has(this.currentVariablePrefix)) {
+        this.importedVariables.set(this.currentVariablePrefix, []);
+      }
+
+      this.importedVariables.get(this.currentVariablePrefix)?.push(node);
+    }
+
     this.variablesIndexedByUuid.set(this.buildVariableUuid(uuid), node);
 
     return node;
@@ -329,18 +401,31 @@ export class VariablesRepository {
   }
 
   private createDataType(itemDefinition: DmnItemDefinition) {
+    const name = this.buildName(itemDefinition["@_name"]);
     return {
-      name: this.buildName(itemDefinition["@_name"]),
+      uuid: itemDefinition["@_id"] ?? "datatype_uuid",
+      name: name,
       properties: new Map<string, DataType>(),
       typeRef: itemDefinition["typeRef"]?.__$$text ?? itemDefinition["@_name"],
+      source: {
+        value: name,
+        feelSyntacticSymbolNature: FeelSyntacticSymbolNature.GlobalVariable,
+        expressions: new Map<string, Expression>(),
+      },
     };
   }
 
   private createInnerType(itemComponent: DmnItemDefinition) {
     return {
+      uuid: itemComponent["@_id"] ?? "item_uuid",
       name: itemComponent["@_name"],
       properties: this.buildProperties(itemComponent),
       typeRef: itemComponent["typeRef"]?.__$$text ?? itemComponent["@_name"],
+      source: {
+        value: itemComponent["@_name"],
+        feelSyntacticSymbolNature: FeelSyntacticSymbolNature.GlobalVariable,
+        expressions: new Map<string, Expression>(),
+      },
     };
   }
 
@@ -348,13 +433,20 @@ export class VariablesRepository {
     const properties = new Map<string, DataType>();
 
     itemComponent.itemComponent?.forEach((def) => {
-      const rootProperty = {
+      const property = {
+        uuid: def["@_id"] ?? "root_property",
         name: def["@_name"],
         properties: this.buildProperties(def),
         typeRef: def["typeRef"]?.__$$text ?? def["@_name"],
+        source: {
+          value: def["@_name"],
+          feelSyntacticSymbolNature: FeelSyntacticSymbolNature.GlobalVariable,
+          expressions: new Map<string, Expression>(),
+        },
       };
 
-      properties.set(rootProperty.name, rootProperty);
+      this.dataTypeIndexedByUuid.set(property.uuid, property);
+      properties.set(property.name, property);
     });
 
     return properties;
@@ -362,7 +454,8 @@ export class VariablesRepository {
 
   private addLiteralExpression(parent: VariableContext, element: DmnLiteralExpression) {
     const id = element["@_id"] ?? "";
-    const expression = new Expression(id, element.text?.__$$text);
+
+    const expression = new Expression(id, element);
     this.expressionsIndexedByUuid.set(id, expression);
     this.addVariable(id, "", FeelSyntacticSymbolNature.LocalVariable, parent);
   }
@@ -388,7 +481,7 @@ export class VariablesRepository {
 
   private addContextEntry(parentNode: VariableContext, contextEntry: DmnContextEntry) {
     const variableNode = this.addVariable(
-      contextEntry.variable?.["@_id"] ?? "",
+      contextEntry["@_id"] ?? "",
       contextEntry.variable?.["@_name"] ?? "",
       FeelSyntacticSymbolNature.LocalVariable,
       parentNode,

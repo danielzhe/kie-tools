@@ -155,7 +155,9 @@ export class ParserHelper {
       if (resolved != null && scopeType instanceof MapBackedType) {
         this.pushScope(scopeType);
         for (const f of scopeType.properties) {
-          this.currentScope?.define(new VariableSymbol(f[0], f[1]));
+          this.currentScope?.define(
+            new VariableSymbol(f[0], f[1], FeelSyntacticSymbolNature.GlobalVariable, f[1].source)
+          );
         }
       } else {
         this.pushScope();
@@ -190,7 +192,6 @@ export class ParserHelper {
     } else {
       const symbol = this.currentScope?.resolve(name);
       if (symbol) {
-        symbol.getType();
         if (symbol instanceof VariableSymbol) {
           const scopeSymbols = [];
           if ((symbol as VariableSymbol).getType() instanceof MapBackedType) {
@@ -208,7 +209,8 @@ export class ParserHelper {
               length,
               symbol.symbolType ?? FeelSyntacticSymbolNature.GlobalVariable,
               name,
-              scopeSymbols
+              scopeSymbols,
+              symbol.variableSource
             )
           );
         } else {

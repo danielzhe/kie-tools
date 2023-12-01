@@ -17,8 +17,12 @@
  * under the License.
  */
 
+import { Variable } from "./Variable";
+
 export interface DataType {
+  uuid: string;
   name: string;
   properties: Map<string, DataType>;
   typeRef?: string;
+  source: Variable;
 }

@@ -27,6 +27,8 @@ import { FeelVariable } from "./FeelVariable";
 import { MapBackedType } from "./grammar/MapBackedType";
 import { VariableContext } from "./VariableContext";
 import { ParsedExpression } from "./ParsedExpression";
+import { FeelSyntacticSymbolNature } from "./FeelSyntacticSymbolNature";
+import { Expression } from "./Expression";
 
 export class FeelVariablesParser {
   private variablesRepository: VariablesRepository;
@@ -101,7 +103,9 @@ export class FeelVariablesParser {
 
   private createType(dataType: DataType | string): Type {
     if (typeof dataType !== "string") {
-      const type = new MapBackedType(dataType.name, dataType.typeRef ?? dataType.name);
+      // mover o source pro dataType object
+
+      const type = new MapBackedType(dataType.name, dataType.typeRef ?? dataType.name, dataType.source);
 
       for (const property of dataType.properties) {
         const innerType = this.createType(property[1]);
@@ -113,6 +117,11 @@ export class FeelVariablesParser {
       return {
         name: dataType,
         typeRef: dataType,
+        source: {
+          value: dataType,
+          feelSyntacticSymbolNature: FeelSyntacticSymbolNature.GlobalVariable,
+          expressions: new Map<string, Expression>(),
+        },
       };
     }
   }

@@ -73,14 +73,14 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
     (contextExpressionDefinition: ContextExpressionDefinition) => {
       const contextEntries = contextExpressionDefinition.contextEntries;
       for (const contextEntry of contextEntries) {
-        variables?.repository.addVariableToContext(
+        variables?.addVariableToContext(
           contextEntry.entryInfo.id,
           contextEntry.entryInfo.name,
           contextExpressionDefinition.id
         );
       }
     },
-    [variables?.repository]
+    [variables]
   );
 
   const addRelationExpressionToVariables = useCallback(
@@ -90,26 +90,22 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
         for (const rowEntry of rowEntries) {
           for (const cell of rowEntry.cells) {
             // The name is not relevant here because Relation does not declare variables, so we're reusing ID.
-            variables?.repository.addVariableToContext(cell.id, cell.id, relationExpressionDefinition.id);
+            variables?.addVariableToContext(cell.id, cell.id, relationExpressionDefinition.id);
           }
         }
       }
     },
-    [variables?.repository]
+    [variables]
   );
 
   const addInvocationExpressionToVariables = useCallback(
     (newExpression: InvocationExpressionDefinition) => {
       const bindingEntries = newExpression.bindingEntries;
       for (const bindingEntry of bindingEntries) {
-        variables?.repository.addVariableToContext(
-          bindingEntry.entryInfo.id,
-          bindingEntry.entryInfo.name,
-          newExpression.id
-        );
+        variables?.addVariableToContext(bindingEntry.entryInfo.id, bindingEntry.entryInfo.name, newExpression.id);
       }
     },
-    [variables?.repository]
+    [variables]
   );
 
   const addListExpressionToVariables = useCallback(
@@ -117,10 +113,10 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
       const items = newExpression.items;
       for (const item of items) {
         // The name is not relevant here because ListExpression does not declare variables, so we're reusing ID.
-        variables?.repository.addVariableToContext(item.id, item.id, newExpression.id);
+        variables?.addVariableToContext(item.id, item.id, newExpression.id);
       }
     },
-    [variables?.repository]
+    [variables]
   );
 
   const addDecisionTableExpressionToVariables = useCallback(
@@ -129,33 +125,29 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
         for (const rule of decisionTable.rules) {
           if (rule.inputEntries) {
             for (const inputEntry of rule.inputEntries) {
-              variables?.repository.addVariableToContext(inputEntry.id, inputEntry.id, decisionTable.id);
+              variables?.addVariableToContext(inputEntry.id, inputEntry.id, decisionTable.id);
             }
           }
 
           if (rule.outputEntries) {
             for (const outputEntry of rule.outputEntries) {
-              variables?.repository.addVariableToContext(outputEntry.id, outputEntry.id, decisionTable.id);
+              variables?.addVariableToContext(outputEntry.id, outputEntry.id, decisionTable.id);
             }
           }
         }
       }
     },
-    [variables?.repository]
+    [variables]
   );
 
   const addFunctionExpressionToVariables = useCallback(
     (functionExpression: FunctionExpressionDefinition) => {
       if (functionExpression.functionKind === FunctionExpressionDefinitionKind.Feel) {
         const expression = (functionExpression as FeelFunctionExpressionDefinition).expression;
-        variables?.repository.addVariableToContext(
-          expression.id,
-          expression.name ?? expression.id,
-          functionExpression.id
-        );
+        variables?.addVariableToContext(expression.id, expression.name ?? expression.id, functionExpression.id);
       }
     },
-    [variables?.repository]
+    [variables]
   );
 
   const onLogicTypeSelected = useCallback(
@@ -170,7 +162,7 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
         };
 
         if (parentElementId) {
-          variables?.repository.addVariableToContext(newExpression.id, newExpression.name, parentElementId);
+          variables?.addVariableToContext(newExpression.id, newExpression.name, parentElementId);
 
           switch (newExpression.logicType) {
             case ExpressionDefinitionLogicType.Context:
@@ -211,12 +203,12 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
       isNested,
       parentElementId,
       setExpression,
-      variables?.repository,
+      variables,
     ]
   );
 
   const onLogicTypeReset = useCallback(() => {
-    variables?.repository.removeVariable(expression.id, true);
+    variables?.removeVariable(expression.id, true);
 
     setExpression((prev) => ({
       id: prev.id,
@@ -224,7 +216,7 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
       dataType: prev.dataType,
       logicType: ExpressionDefinitionLogicType.Undefined,
     }));
-  }, [expression.id, setExpression, variables?.repository]);
+  }, [expression.id, setExpression, variables]);
 
   const getPlacementRef = useCallback(() => containerRef.current!, []);
 

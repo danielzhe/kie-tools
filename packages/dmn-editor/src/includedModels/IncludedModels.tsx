@@ -36,6 +36,7 @@ import { Alert, AlertVariant } from "@patternfly/react-core/dist/js/components/A
 import { Dropdown, DropdownItem, KebabToggle } from "@patternfly/react-core/dist/js/components/Dropdown";
 import { TrashIcon } from "@patternfly/react-icons/dist/js/icons/trash-icon";
 import { useInViewSelect } from "../responsiveness/useInViewSelect";
+import { DmnLatestModel } from "../../../dmn-marshaller/src";
 
 export const EMPTY_IMPORT_NAME_NAMESPACE_IDENTIFIER = "<Default>";
 
@@ -369,10 +370,32 @@ function IncludedModelCard({
 
   const { allFeelVariableUniqueNames, allTopLevelDataTypesByFeelName } = useDmnEditorDerivedStore();
 
+  const { externalModelsByNamespace } = useExternalModels();
+  const externalDmnModels = useMemo(
+    () =>
+      Object.entries(externalModelsByNamespace ?? {}).reduce((acc, [namespace, externalModel]) => {
+        if (!externalModel) {
+          console.warn(`DMN EDITOR: Could not find model with namespace '${namespace}'. Ignoring.`);
+          return acc;
+        } else if (externalModel.type === "dmn") {
+          return acc.set(namespace, externalModel.model);
+        } else {
+          return acc;
+        }
+      }, new Map<string, DmnLatestModel>()),
+    [externalModelsByNamespace]
+  );
+
   const rename = useCallback<OnInlineFeelNameRenamed>(
     (newName) => {
       dmnEditorStoreApi.setState((state) => {
-        renameImport({ definitions: state.dmn.model.definitions, index, newName, allTopLevelDataTypesByFeelName });
+        renameImport({
+          definitions: state.dmn.model.definitions,
+          index,
+          newName,
+          allTopLevelDataTypesByFeelName,
+          externalDmnModels,
+        });
       });
     },
     [allTopLevelDataTypesByFeelName, dmnEditorStoreApi, index]
@@ -492,11 +515,31 @@ function UnknownIncludedModelCard({
   );
 
   const { allFeelVariableUniqueNames, allTopLevelDataTypesByFeelName } = useDmnEditorDerivedStore();
-
+  const { externalModelsByNamespace } = useExternalModels();
+  const externalDmnModels = useMemo(
+    () =>
+      Object.entries(externalModelsByNamespace ?? {}).reduce((acc, [namespace, externalModel]) => {
+        if (!externalModel) {
+          console.warn(`DMN EDITOR: Could not find model with namespace '${namespace}'. Ignoring.`);
+          return acc;
+        } else if (externalModel.type === "dmn") {
+          return acc.set(namespace, externalModel.model);
+        } else {
+          return acc;
+        }
+      }, new Map<string, DmnLatestModel>()),
+    [externalModelsByNamespace]
+  );
   const rename = useCallback<OnInlineFeelNameRenamed>(
     (newName) => {
       dmnEditorStoreApi.setState((state) => {
-        renameImport({ definitions: state.dmn.model.definitions, index, newName, allTopLevelDataTypesByFeelName });
+        renameImport({
+          definitions: state.dmn.model.definitions,
+          index,
+          newName,
+          allTopLevelDataTypesByFeelName,
+          externalDmnModels,
+        });
       });
     },
     [allTopLevelDataTypesByFeelName, dmnEditorStoreApi, index]

@@ -467,26 +467,18 @@ export function DecisionTableExpression(
       for (const rule of newRules) {
         if (rule.inputEntries) {
           for (const inputEntry of rule.inputEntries) {
-            variables?.repository.addVariableToContext(
-              inputEntry.id,
-              inputEntry.id,
-              decisionTableExpression.parentElementId
-            );
+            variables?.addVariableToContext(inputEntry.id, inputEntry.id, decisionTableExpression.parentElementId);
           }
         }
 
         if (rule.outputEntries) {
           for (const outputEntry of rule.outputEntries) {
-            variables?.repository.addVariableToContext(
-              outputEntry.id,
-              outputEntry.id,
-              decisionTableExpression.parentElementId
-            );
+            variables?.addVariableToContext(outputEntry.id, outputEntry.id, decisionTableExpression.parentElementId);
           }
         }
       }
     },
-    [decisionTableExpression.parentElementId, variables?.repository]
+    [decisionTableExpression.parentElementId, variables]
   );
 
   const onRowAdded = useCallback(
@@ -596,11 +588,7 @@ export function DecisionTableExpression(
             newRules.forEach((r) => {
               for (let i = 0; i < args.columnsCount; i++) {
                 const inputEntry = createInputEntry();
-                variables?.repository.addVariableToContext(
-                  inputEntry.id,
-                  inputEntry.id,
-                  decisionTableExpression.parentElementId
-                );
+                variables?.addVariableToContext(inputEntry.id, inputEntry.id, decisionTableExpression.parentElementId);
                 r.inputEntries.splice(sectionIndex, 0, inputEntry);
               }
             });
@@ -640,7 +628,7 @@ export function DecisionTableExpression(
             newRules.forEach((r) => {
               for (let i = 0; i < args.columnsCount; i++) {
                 const outputEntry = createOutputEntry();
-                variables?.repository.addVariableToContext(
+                variables?.addVariableToContext(
                   outputEntry.id,
                   outputEntry.id,
                   decisionTableExpression.parentElementId
@@ -695,7 +683,7 @@ export function DecisionTableExpression(
         }
       });
     },
-    [decisionTableExpression.parentElementId, getSectionIndexForGroupType, setExpression, variables?.repository]
+    [decisionTableExpression.parentElementId, getSectionIndexForGroupType, setExpression, variables]
   );
 
   const onColumnDeleted = useCallback(

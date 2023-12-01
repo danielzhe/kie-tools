@@ -20,14 +20,16 @@
 import { FeelVariablesParser } from "./parser/FeelVariablesParser";
 import { DmnDefinitions, VariablesRepository } from "./parser/VariablesRepository";
 import { DmnLatestModel, getMarshaller } from "@kie-tools/dmn-marshaller";
+import { ParsedExpression } from "./parser/ParsedExpression";
+import { Expression } from "./parser/Expression";
 
 export class FeelVariables {
-  private readonly _parser: FeelVariablesParser;
-  private readonly _repository: VariablesRepository;
+  private readonly parser: FeelVariablesParser;
+  private readonly repository: VariablesRepository;
 
-  constructor(dmnDefinitions: DmnDefinitions, externalDefinitions: Map<string, DmnLatestModel>) {
-    this._repository = new VariablesRepository(dmnDefinitions, externalDefinitions);
-    this._parser = new FeelVariablesParser(this._repository);
+  constructor(dmnDefinitions: DmnDefinitions, externalDefinitions?: Map<string, DmnLatestModel>) {
+    this.repository = new VariablesRepository(dmnDefinitions, externalDefinitions);
+    this.parser = new FeelVariablesParser(this.repository);
   }
 
   static fromModelXml(xml: string): FeelVariables {
@@ -40,11 +42,37 @@ export class FeelVariables {
     return marshaller.parser.parse().definitions;
   }
 
-  get parser(): FeelVariablesParser {
-    return this._parser;
+  public parse(variableContextUuid: string, expression: string): ParsedExpression {
+    return this.parser.parse(variableContextUuid, expression);
   }
 
-  get repository(): VariablesRepository {
-    return this._repository;
+  public updateVariableType(variableUuid: string, newType: string) {
+    this.repository.updateVariableType(variableUuid, newType);
+  }
+
+  public renameVariable(variableUuid: string, newName: string) {
+    this.repository.renameVariable(variableUuid, newName);
+  }
+
+  public renameImport(oldName: string, newImportName: string) {
+    this.repository.renameImport(oldName, newImportName);
+  }
+
+  public addVariableToContext(variableUuid: string, variableName: string, parentUuid: string, childUuid?: string) {
+    this.repository.addVariableToContext(variableUuid, variableName, parentUuid, childUuid);
+  }
+
+  public removeVariable(variableUuid: string, removeChildren?: boolean) {
+    this.repository.removeVariable(variableUuid, removeChildren);
+  }
+
+  get expressions(): Map<string, Expression> {
+    return this.repository.expressions;
+  }
+
+  public applyChangesToDefinition() {
+    for (const expression of this.expressions.values()) {
+      expression.applyChangesToExpressionSource();
+    }
   }
 }

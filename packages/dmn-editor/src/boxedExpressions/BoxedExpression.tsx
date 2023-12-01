@@ -87,7 +87,7 @@ export function BoxedExpression({ container }: { container: React.RefObject<HTML
     }
 
     return new FeelVariables(thisDmn.model.definitions, externalModels);
-  }, [externalDmnsByNamespace, thisDmn.model.definitions]);
+  }, [thisDmn.model.definitions, externalDmnsByNamespace]);
 
   const widthsById = useMemo(() => {
     return (
@@ -412,6 +412,7 @@ function determineInputsForDecision(
     return undefined;
   }
 }
+
 function flattenComponents(
   itemDefinition: DMN15__tItemDefinition,
   acc: string
