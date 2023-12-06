@@ -252,7 +252,7 @@ export const FeelInput = React.forwardRef<FeelInputRef, FeelInputProps>(
 
               let lastPosition = 0;
               let offset = 0;
-              const parsedExpression = feelVariables.parser.parse(expressionId ?? "", text);
+              const parsedExpression = feelVariables.parse(expressionId ?? "", text);
               setCurrentParsedExpression(parsedExpression);
               for (const variable of parsedExpression.feelVariables) {
                 lastPosition = variable.startIndex;

@@ -18,14 +18,20 @@
  */
 
 import { Type } from "./Type";
+import { Variable } from "../Variable";
 
 export class MapBackedType implements Type {
   private readonly _typeRef: string;
   private readonly _name: string;
   private readonly _properties: Map<string, Type>;
+  private readonly _source: Variable;
 
   get name(): string {
     return this._name;
+  }
+
+  get source(): Variable {
+    return this._source;
   }
 
   get properties(): Map<string, Type> {
@@ -36,9 +42,10 @@ export class MapBackedType implements Type {
     return this._typeRef;
   }
 
-  constructor(name: string, typeRef: string) {
+  constructor(name: string, typeRef: string, source: Variable) {
     this._typeRef = typeRef;
     this._name = name;
     this._properties = new Map<string, Type>();
+    this._source = source;
   }
 }

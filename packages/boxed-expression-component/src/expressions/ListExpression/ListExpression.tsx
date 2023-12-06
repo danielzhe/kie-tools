@@ -157,7 +157,7 @@ export function ListExpression(
         for (let i = 0; i < args.rowsCount; i++) {
           const newItem = getDefaultListItem(prev.dataType);
           newListItems.push(newItem);
-          variables?.repository.addVariableToContext(newItem.id, newItem.id, listExpression.parentElementId);
+          variables?.addVariableToContext(newItem.id, newItem.id, listExpression.parentElementId);
         }
 
         for (const newEntry of newListItems) {
@@ -171,7 +171,7 @@ export function ListExpression(
         return { ...prev, items: newItems };
       });
     },
-    [getDefaultListItem, listExpression.parentElementId, setExpression, variables?.repository]
+    [getDefaultListItem, listExpression.parentElementId, setExpression, variables]
   );
 
   const onRowDeleted = useCallback(

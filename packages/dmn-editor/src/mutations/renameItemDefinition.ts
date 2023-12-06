@@ -24,6 +24,7 @@ import {
   traverseTypeRefedInExpressionHolders,
 } from "../dataTypes/DataTypeSpec";
 import { DataTypeIndex } from "../dataTypes/DataTypes";
+import { FeelVariables } from "@kie-tools/dmn-feel-antlr4-parser";
 
 export function renameItemDefinition({
   definitions,
@@ -50,6 +51,8 @@ export function renameItemDefinition({
   const trimmedNewName = newName.trim();
 
   const { itemDefinition } = findDataTypeById({ definitions, itemDefinitionId: itemDefinitionId, allDataTypesById });
+
+  const feelVariables = new FeelVariables(definitions);
 
   // Is top-level itemDefinition
   if (!dataType?.parentId) {
@@ -85,7 +88,8 @@ export function renameItemDefinition({
 
   // Not top-level.. meaning that we need to update FEEL expressions referencing it
   else {
-    // FIXME: Daniel --> Implement this...
+    feelVariables.renameVariable(itemDefinitionId, trimmedNewName);
+    feelVariables.applyChangesToDefinition();
   }
 
   itemDefinition["@_name"] = trimmedNewName;

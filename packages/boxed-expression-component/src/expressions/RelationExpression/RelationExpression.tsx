@@ -233,9 +233,9 @@ export function RelationExpression(
 
   const createCell = useCallback(() => {
     const cell = { id: generateUuid(), content: RELATION_EXPRESSION_DEFAULT_VALUE };
-    variables?.repository.addVariableToContext(cell.id, cell.id, relationExpression.parentElementId);
+    variables?.addVariableToContext(cell.id, cell.id, relationExpression.parentElementId);
     return cell;
-  }, [relationExpression.parentElementId, variables?.repository]);
+  }, [relationExpression.parentElementId, variables]);
 
   const onRowAdded = useCallback(
     (args: { beforeIndex: number; rowsCount: number; insertDirection: InsertRowColumnsDirection }) => {

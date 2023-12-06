@@ -17,7 +17,10 @@
  * under the License.
  */
 
+import { Variable } from "../Variable";
+
 export interface Type {
   name: string;
   typeRef?: string;
+  source: Variable;
 }

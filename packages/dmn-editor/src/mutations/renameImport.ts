@@ -31,17 +31,21 @@ import { buildFeelQName, parseFeelQName } from "../feel/parseFeelQName";
 import { DataTypeIndex } from "../dataTypes/DataTypes";
 import { DMN15__tContext } from "@kie-tools/dmn-marshaller/dist/schemas/dmn-1_5/ts-gen/types";
 import { DMN15_SPEC } from "../Dmn15Spec";
+import { DmnLatestModel } from "@kie-tools/dmn-marshaller";
+import { FeelVariables } from "@kie-tools/dmn-feel-antlr4-parser";
 
 export function renameImport({
   definitions,
   newName,
   allTopLevelDataTypesByFeelName,
   index,
+  externalDmnModels,
 }: {
   definitions: DMN15__tDefinitions;
   allTopLevelDataTypesByFeelName: DataTypeIndex;
   newName: string;
   index: number;
+  externalDmnModels: Map<string, DmnLatestModel>;
 }) {
   const trimmedNewName = newName.trim();
 
@@ -117,7 +121,9 @@ export function renameImport({
 
   // TODO: Tiago --> Update the "document" entry of PMML functions that were pointing to the renamed included PMML model.
 
-  // FIXME: Daniel --> Update FEEL expressions that contain references to this import.
+  const feelVariables = new FeelVariables(definitions, externalDmnModels);
+  feelVariables.renameImport(_import["@_name"], trimmedNewName);
+  feelVariables.applyChangesToDefinition();
 
   _import["@_name"] = trimmedNewName;
 }

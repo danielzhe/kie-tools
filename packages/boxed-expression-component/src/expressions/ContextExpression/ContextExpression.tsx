@@ -55,6 +55,7 @@ import { ContextEntryInfoCell } from "./ContextEntryInfoCell";
 import "./ContextExpression.css";
 import { ContextResultExpressionCell } from "./ContextResultExpressionCell";
 import { getExpressionTotalMinWidth } from "../../resizing/WidthMaths";
+import { updateExpressions } from "./ExpressionVariablesUpdater";
 
 const CONTEXT_ENTRY_DEFAULT_DATA_TYPE = DmnBuiltInDataType.Undefined;
 
@@ -190,13 +191,19 @@ export function ContextExpression(
       setExpression((prev: ContextExpressionDefinition) => {
         const contextEntries = [...prev.contextEntries];
 
-        variables?.repository.updateVariableType(newEntry.entryInfo.id, newEntry.entryInfo.dataType);
-        variables?.repository.renameVariable(newEntry.entryInfo.id, newEntry.entryInfo.name);
+        if (variables) {
+          const affectedEntries = prev.contextEntries.map((e) => e.entryExpression);
+          affectedEntries.push(prev.result);
+          variables.updateVariableType(newEntry.entryInfo.id, newEntry.entryInfo.dataType);
+          variables.renameVariable(newEntry.entryInfo.id, newEntry.entryInfo.name);
+          updateExpressions(affectedEntries, variables.expressions);
+        }
+
         contextEntries[rowIndex] = newEntry;
         return { ...prev, contextEntries };
       });
     },
-    [setExpression, variables?.repository]
+    [setExpression, variables]
   );
 
   const cellComponentByColumnAccessor: BeeTableProps<ROWTYPE>["cellComponentByColumnAccessor"] = useMemo(() => {
@@ -295,14 +302,9 @@ export function ContextExpression(
         childId = prev.result.id;
       }
 
-      variables?.repository.addVariableToContext(
-        newVariable.entryInfo.id,
-        newVariable.entryInfo.name,
-        parentId,
-        childId
-      );
+      variables?.addVariableToContext(newVariable.entryInfo.id, newVariable.entryInfo.name, parentId, childId);
     },
-    [contextExpression.parentElementId, variables?.repository]
+    [contextExpression.parentElementId, variables]
   );
 
   const onRowAdded = useCallback(
@@ -343,7 +345,7 @@ export function ContextExpression(
       setExpression((prev: ContextExpressionDefinition) => {
         const newContextEntries = [...(prev.contextEntries ?? [])];
 
-        variables?.repository.removeVariable(prev.contextEntries[args.rowIndex].entryInfo.id);
+        variables?.removeVariable(prev.contextEntries[args.rowIndex].entryInfo.id);
 
         newContextEntries.splice(args.rowIndex, 1);
         return {
@@ -352,7 +354,7 @@ export function ContextExpression(
         };
       });
     },
-    [setExpression, variables?.repository]
+    [setExpression, variables]
   );
 
   const onRowReset = useCallback(

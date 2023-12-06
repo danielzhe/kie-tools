@@ -19,7 +19,8 @@
 
 import { DataType } from "./DataType";
 import { FeelSyntacticSymbolNature } from "./FeelSyntacticSymbolNature";
-import { Expression } from "./VariableOccurrence";
+
+import { Expression } from "./Expression";
 
 /**
  * Describe a variable in FEEL.
