@@ -33,13 +33,13 @@ const meta: Meta<BoxedExpressionEditorProps> = {
 export default meta;
 type Story = StoryObj<BoxedExpressionEditorProps>;
 
-const expressionId = "_1AAE9CB0-2B4B-4159-A994-A93D5F91EE23";
 export const strategyExpression: DecisionTableExpressionDefinition = {
   __$$element: "decisionTable",
-  "@_id": expressionId,
+  "@_id": "_1AAE9CB0-2B4B-4159-A994-A93D5F91EE23",
   "@_label": "Strategy",
   "@_typeRef": "t.Strategy",
   "@_hitPolicy": "UNIQUE",
+  annotation: [{ "@_name": "annotation-1" }],
   input: [
     {
       "@_id": "_000159BA-3887-4445-8DC7-3A7A82EE3ED9",
@@ -99,6 +99,10 @@ export const strategyExpression: DecisionTableExpressionDefinition = {
   ],
 };
 
+export const strategyWidthsById = new Map([
+  ["_1AAE9CB0-2B4B-4159-A994-A93D5F91EE23", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 138, 129, 113, 100]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -109,6 +113,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
-    widthsById: new Map([[expressionId, [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 138, 129, 113, 100]]]),
+    widthsById: strategyWidthsById,
   },
 };

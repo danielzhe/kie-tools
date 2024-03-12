@@ -26,6 +26,7 @@ import {
   dataTypes,
   pmmlDocuments,
 } from "../../boxedExpressionStoriesWrapper";
+import { BEE_TABLE_ROW_INDEX_COLUMN_WIDTH } from "../../../src/resizing/WidthConstants";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<BoxedExpressionEditorProps> = {
@@ -121,6 +122,10 @@ export const canDriveExpressionDefinition: DecisionTableExpressionDefinition = {
     },
   ],
 };
+
+export const canDriveWidthsById = new Map<string, number[]>([
+  ["_21608B6A-1D9E-426D-86CF-B0CA7AB20D31", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 100, 100, 100]],
+]);
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {

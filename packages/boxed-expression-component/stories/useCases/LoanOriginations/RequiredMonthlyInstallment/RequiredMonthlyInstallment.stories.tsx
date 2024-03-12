@@ -32,12 +32,9 @@ const meta: Meta<BoxedExpressionEditorProps> = {
 export default meta;
 type Story = StoryObj<BoxedExpressionEditorProps>;
 
-const expressionId = "_EF51A747-D5E1-414E-9DD5-964362FB2AEC";
-const innerExpressionId = "_EE98C97E-4CFE-463D-A500-B8D6D7FC69BD";
-
 export const requiredMonthlyInstallmentExpression: InvocationExpressionDefinition = {
   __$$element: "invocation",
-  "@_id": expressionId,
+  "@_id": "_EF51A747-D5E1-414E-9DD5-964362FB2AEC",
   "@_label": "Required monthly installment",
   "@_typeRef": DmnBuiltInDataType.Number,
   expression: {
@@ -54,7 +51,7 @@ export const requiredMonthlyInstallmentExpression: InvocationExpressionDefinitio
       },
       expression: {
         __$$element: "literalExpression",
-        "@_id": innerExpressionId,
+        "@_id": "_EE98C97E-4CFE-463D-A500-B8D6D7FC69BD",
         "@_label": "Product Type",
         "@_typeRef": "t.ProductType",
         text: { __$$text: "Requested product.ProductType" },
@@ -106,6 +103,11 @@ export const requiredMonthlyInstallmentExpression: InvocationExpressionDefinitio
   ],
 };
 
+export const requiredMonthlyInstallmentWidthsById = new Map<string, number[]>([
+  ["_EF51A747-D5E1-414E-9DD5-964362FB2AEC", [120]],
+  ["_EE98C97E-4CFE-463D-A500-B8D6D7FC69BD", [250]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -116,9 +118,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
-    widthsById: new Map<string, number[]>([
-      [expressionId, [120]],
-      [innerExpressionId, [250]],
-    ]),
+    widthsById: requiredMonthlyInstallmentWidthsById,
   },
 };

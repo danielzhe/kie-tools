@@ -32,6 +32,7 @@ import {
   pmmlDocuments,
 } from "../../boxedExpressionStoriesWrapper";
 import { BoxedExpressionEditor, BoxedExpressionEditorProps } from "../../../src/expressions";
+import { BEE_TABLE_ROW_INDEX_COLUMN_WIDTH } from "../../../src/resizing/WidthConstants";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<BoxedExpressionEditorProps> = {
@@ -170,6 +171,10 @@ export const employeesExpression: RelationExpressionDefinition = {
   ],
 };
 
+export const employeesWidthsById = new Map<string, number[]>([
+  ["_03E4FDF0-AF4A-4C82-A589-2F9BED02921B", [100, 156, 150, 252, 100]],
+]);
+
 export const findEmployeesByKnowledgeExpression: FunctionExpressionDefinition = {
   __$$element: "functionDefinition",
   "@_id": "_243056C9-28EA-4EF2-8510-6F3BC6A5E5DC",
@@ -230,6 +235,14 @@ export const findEmployeesByKnowledgeExpression: FunctionExpressionDefinition = 
     ],
   },
 };
+
+export const findEmployeesByKnowledgeWidthsById = new Map<string, number[]>([
+  ["_243056C9-28EA-4EF2-8510-6F3BC6A5E5DC", [604]],
+  ["_1B96445B-523F-49B3-99BE-308A2F3CFBA5", [204, 400]],
+  ["_BC626016-B599-47A1-ABD6-67A2C7F761CE", [400]],
+  ["_3543AF00-0F90-47C4-BCBF-6E3B28A08BD7", [400]],
+  ["_049ECA86-1971-48B7-86FF-7E89B399074A", [400]],
+]);
 
 export const findEmployeesExpression: InvocationExpressionDefinition = {
   __$$element: "invocation",
@@ -295,6 +308,10 @@ export const findEmployeesExpression: InvocationExpressionDefinition = {
   ],
 };
 
+export const findEmployeesWidthsById = new Map<string, number[]>([
+  ["_8001CBC8-8DE4-4DBF-8B02-7FBFC582B136", [120, 100]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Employees: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -305,6 +322,7 @@ export const Employees: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: employeesWidthsById,
   },
 };
 
@@ -317,6 +335,7 @@ export const FindEmployeesByKnowledge: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: findEmployeesByKnowledgeWidthsById,
   },
 };
 
@@ -329,5 +348,6 @@ export const FindByEmployees: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: findEmployeesWidthsById,
   },
 };

@@ -26,6 +26,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { beeGwtService, BoxedExpressionEditorWrapper, pmmlDocuments } from "../../../../boxedExpressionStoriesWrapper";
 import { BoxedExpressionEditor, BoxedExpressionEditorProps } from "../../../../../src/expressions";
 import { loanOriginationsDataTypes } from "../../boxedExpressionEditorBase";
+import { BEE_TABLE_ROW_INDEX_COLUMN_WIDTH } from "../../../../../src/resizing/WidthConstants";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<BoxedExpressionEditorProps> = {
@@ -184,6 +185,14 @@ export const affordabilityCalculationExpression: FunctionExpressionDefinition = 
   },
 };
 
+export const affordabilityCalculationWidthsById = new Map<string, number[]>([
+  ["_72FC1D95-7AB8-4459-9815-D2EC186DD40A", []],
+  ["_C46876F8-8596-4064-9291-AE059DE73F84", [169, 636]],
+  ["_4D8F65CA-89A3-449B-830F-1241E838A428", [636]],
+  ["_AC320F29-8043-4A9E-9A5A-7E07C873084F", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 194, 154, 126]],
+  ["_B325C569-762E-408B-AAB5-D55AF7FF01C4", [636]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -194,5 +203,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: affordabilityCalculationWidthsById,
   },
 };

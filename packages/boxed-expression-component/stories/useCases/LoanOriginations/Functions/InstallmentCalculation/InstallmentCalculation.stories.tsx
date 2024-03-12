@@ -100,6 +100,14 @@ export const installmentCalculationExpression: FunctionExpressionDefinition = {
   },
 };
 
+export const installmentCalculationWidthsById = new Map<string, number[]>([
+  ["_1E31E836-0609-4B4C-8FAF-389F774B1FE3", []],
+  ["_7A96C527-9D9E-4199-987B-A6A0C8308296", [120, 320]],
+  ["_6B635731-73ED-41B8-9D3C-72F174D68036", [320]],
+  ["_68539BE5-8AA0-4C5B-8AE6-D4A8F1118B7B", [320]],
+  ["_94444797-708D-418A-A22A-5CE6CAB35F6F", [320]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -110,5 +118,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: installmentCalculationWidthsById,
   },
 };

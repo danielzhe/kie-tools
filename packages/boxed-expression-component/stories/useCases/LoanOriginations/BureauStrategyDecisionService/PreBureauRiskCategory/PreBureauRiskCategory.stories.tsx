@@ -33,12 +33,9 @@ const meta: Meta<BoxedExpressionEditorProps> = {
 export default meta;
 type Story = StoryObj<BoxedExpressionEditorProps>;
 
-const expressionId = "_21BA0CB9-F15E-482F-BCBB-F6694EF9B1FC";
-const innerExpressionId = "_DD3AABF1-9E83-4F71-A769-D9CC01231580";
-
 export const preBureauRiskCategoryExpression: ContextExpressionDefinition = {
   __$$element: "context",
-  "@_id": expressionId,
+  "@_id": "_21BA0CB9-F15E-482F-BCBB-F6694EF9B1FC",
   "@_label": "Pre-bureau risk category",
   "@_typeRef": "t.BureauRiskCategory",
   contextEntry: [
@@ -59,7 +56,7 @@ export const preBureauRiskCategoryExpression: ContextExpressionDefinition = {
     {
       expression: {
         __$$element: "decisionTable",
-        "@_id": innerExpressionId,
+        "@_id": "_DD3AABF1-9E83-4F71-A769-D9CC01231580",
         "@_label": "Result Expression",
         "@_hitPolicy": "UNIQUE",
         annotation: [{ "@_name": "annotation-1" }],
@@ -195,6 +192,12 @@ export const preBureauRiskCategoryExpression: ContextExpressionDefinition = {
   ],
 };
 
+export const preBureauRiskCategoryWidthsById = new Map<string, number[]>([
+  ["_21BA0CB9-F15E-482F-BCBB-F6694EF9B1FC", [154, 570]],
+  ["_9D39AD1B-4DC7-4B5F-A605-9F04A4C761DA", [570]],
+  ["_DD3AABF1-9E83-4F71-A769-D9CC01231580", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 123, 154, 123, 100]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -205,9 +208,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
-    widthsById: new Map<string, number[]>([
-      [expressionId, [154, 570]],
-      [innerExpressionId, [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 123, 154, 123, 100]],
-    ]),
+    widthsById: preBureauRiskCategoryWidthsById,
   },
 };

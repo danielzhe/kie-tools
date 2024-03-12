@@ -26,9 +26,15 @@ import { BoxedExpressionEditorWrapper } from "../boxedExpressionStoriesWrapper";
 import { BoxedExpressionEditorProps } from "../../src/expressions";
 import { Title } from "@patternfly/react-core/dist/js/components/Title";
 import { Button, Flex, FlexItem, Tooltip } from "@patternfly/react-core/dist/js";
-import { canDriveExpressionDefinition } from "../useCases/CanDrive/CanDrive.stories";
-import { findEmployeesByKnowledgeExpression } from "../useCases/FindEmployees/FindEmployees.stories";
-import { postBureauAffordabilityExpression } from "../useCases/LoanOriginations/RoutingDecisionService/PostBureauAffordability/PostBureauAffordability.stories";
+import { canDriveExpressionDefinition, canDriveWidthsById } from "../useCases/CanDrive/CanDrive.stories";
+import {
+  findEmployeesByKnowledgeExpression,
+  findEmployeesByKnowledgeWidthsById,
+} from "../useCases/FindEmployees/FindEmployees.stories";
+import {
+  postBureauAffordabilityExpression,
+  postBureauAffordabilityWidthsById,
+} from "../useCases/LoanOriginations/RoutingDecisionService/PostBureauAffordability/PostBureauAffordability.stories";
 
 /**
  * Constants copied from tests to fix debugger
@@ -85,7 +91,8 @@ const pmmlDocuments = [
   },
 ];
 
-const INITIAL_EXPRESSION: ExpressionDefinition = undefined!;
+const INITIAL_EXPRESSION: ExpressionDefinition | undefined = undefined;
+const INITIAL_WIDTHS_BY_ID: Map<string, number[]> | undefined = undefined;
 
 //Defining global function that will be available in the Window namespace and used by the BoxedExpressionEditor component
 const beeGwtService: BeeGwtService = {
@@ -104,13 +111,15 @@ function App(args: BoxedExpressionEditorProps) {
   const [expressionDefinition, setExpressionDefinition] = useState<ExpressionDefinition | undefined>(
     INITIAL_EXPRESSION
   );
+  const [widthsById, setWidthsById] = useState<Map<string, number[]> | undefined>(INITIAL_WIDTHS_BY_ID);
 
   useEffect(() => {
     setVersion((prev) => prev + 1);
   }, [expressionDefinition]);
 
-  const setSample = useCallback((sample: ExpressionDefinition) => {
+  const setSample = useCallback((sample?: ExpressionDefinition, widthsById?: Map<string, number[]>) => {
     setExpressionDefinition(sample);
+    setWidthsById(widthsById);
   }, []);
 
   return (
@@ -119,16 +128,20 @@ function App(args: BoxedExpressionEditorProps) {
         <FlexItem>
           <Flex style={{ width: "96vw" }}>
             <FlexItem>
-              <Button onClick={() => setSample(undefined!)}>Empty</Button>
+              <Button onClick={() => setSample(undefined, undefined)}>Empty</Button>
             </FlexItem>
             <FlexItem>
-              <Button onClick={() => setSample(canDriveExpressionDefinition)}>Can Drive?</Button>
+              <Button onClick={() => setSample(canDriveExpressionDefinition, canDriveWidthsById)}>Can Drive?</Button>
             </FlexItem>
             <FlexItem>
-              <Button onClick={() => setSample(findEmployeesByKnowledgeExpression)}>Find Employees by Knowledge</Button>
+              <Button onClick={() => setSample(findEmployeesByKnowledgeExpression, findEmployeesByKnowledgeWidthsById)}>
+                Find Employees by Knowledge
+              </Button>
             </FlexItem>
             <FlexItem>
-              <Button onClick={() => setSample(postBureauAffordabilityExpression)}>Affordability</Button>
+              <Button onClick={() => setSample(postBureauAffordabilityExpression, postBureauAffordabilityWidthsById)}>
+                Affordability
+              </Button>
             </FlexItem>
             <FlexItem align={{ default: "alignRight" }}>
               <Tooltip content={"This number updates everytime the expressionDefinition object is updated"}>
@@ -146,6 +159,7 @@ function App(args: BoxedExpressionEditorProps) {
               pmmlDocuments: args.pmmlDocuments,
               expression: expressionDefinition,
               onExpressionChange: setExpressionDefinition,
+              widthsById: widthsById,
             })}
           </div>
         </FlexItem>
@@ -166,9 +180,10 @@ export const WebApp: Story = {
   render: (args) => App(args),
   args: {
     expressionHolderId: "_00000000-0000-0000-0000-000000000000",
-    expression: undefined!,
+    expression: undefined,
     dataTypes: dataTypes,
     beeGwtService: beeGwtService,
     pmmlDocuments: pmmlDocuments,
+    widthsById: undefined,
   },
 };

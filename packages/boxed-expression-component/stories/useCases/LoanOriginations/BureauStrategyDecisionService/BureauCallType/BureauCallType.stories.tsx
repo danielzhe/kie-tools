@@ -22,6 +22,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { beeGwtService, BoxedExpressionEditorWrapper, pmmlDocuments } from "../../../../boxedExpressionStoriesWrapper";
 import { BoxedExpressionEditor, BoxedExpressionEditorProps } from "../../../../../src/expressions";
 import { loanOriginationsDataTypes } from "../../boxedExpressionEditorBase";
+import { BEE_TABLE_ROW_INDEX_COLUMN_WIDTH } from "../../../../../src/resizing/WidthConstants";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<BoxedExpressionEditorProps> = {
@@ -85,6 +86,10 @@ export const bureauCallTypeExpression: DecisionTableExpressionDefinition = {
   ],
 };
 
+export const abureauCallTypeWidthsById = new Map([
+  ["_7FB4A019-EC04-4153-86C1-C90A8BA8E6C3", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 210, 175, 145]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -95,5 +100,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: abureauCallTypeWidthsById,
   },
 };

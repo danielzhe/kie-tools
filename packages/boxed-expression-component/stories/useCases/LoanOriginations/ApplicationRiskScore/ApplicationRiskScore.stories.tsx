@@ -22,11 +22,7 @@ import { ContextExpressionDefinition, DmnBuiltInDataType } from "../../../../src
 import type { Meta, StoryObj } from "@storybook/react";
 import { beeGwtService, BoxedExpressionEditorWrapper, pmmlDocuments } from "../../../boxedExpressionStoriesWrapper";
 import { BoxedExpressionEditor, BoxedExpressionEditorProps } from "../../../../src/expressions";
-import {
-  BEE_TABLE_ROW_INDEX_COLUMN_WIDTH,
-  CONTEXT_ENTRY_INFO_MIN_WIDTH,
-  CONTEXT_EXPRESSION_EXTRA_WIDTH,
-} from "../../../../src/resizing/WidthConstants";
+import { BEE_TABLE_ROW_INDEX_COLUMN_WIDTH } from "../../../../src/resizing/WidthConstants";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<BoxedExpressionEditorProps> = {
@@ -37,11 +33,9 @@ const meta: Meta<BoxedExpressionEditorProps> = {
 export default meta;
 type Story = StoryObj<BoxedExpressionEditorProps>;
 
-const expressionId = "_36398C55-5ED1-41C6-B643-98DBDD52D143";
-const innerExpressionId = "_40CCF542-F80F-4C14-AAE5-AAAFA3304648";
 export const applicationRiskScoreExpression: ContextExpressionDefinition = {
   __$$element: "context",
-  "@_id": expressionId,
+  "@_id": "_36398C55-5ED1-41C6-B643-98DBDD52D143",
   "@_label": "Application risk score",
   "@_typeRef": DmnBuiltInDataType.Number,
   contextEntry: [
@@ -92,7 +86,7 @@ export const applicationRiskScoreExpression: ContextExpressionDefinition = {
     {
       expression: {
         __$$element: "decisionTable",
-        "@_id": innerExpressionId,
+        "@_id": "_40CCF542-F80F-4C14-AAE5-AAAFA3304648",
         "@_label": "Result Expression",
         "@_hitPolicy": "COLLECT",
         "@_aggregation": "SUM",
@@ -262,6 +256,14 @@ export const applicationRiskScoreExpression: ContextExpressionDefinition = {
   ],
 };
 
+export const applicationRiskScoreWidthsById = new Map([
+  ["_36398C55-5ED1-41C6-B643-98DBDD52D143", [176, 739]],
+  ["_45DE91F3-7731-4A5C-AC8B-0C6AD17508DF", [739]],
+  ["_F3354465-FA19-4664-A0A1-355511122FBE", [739]],
+  ["_8BDD13D2-4F23-4A76-9A5F-DD9164B1B21A", [739]],
+  ["_40CCF542-F80F-4C14-AAE5-AAAFA3304648", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 132, 132, 144, 161, 100]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -272,9 +274,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
-    widthsById: new Map([
-      [expressionId, [CONTEXT_ENTRY_INFO_MIN_WIDTH, 739]],
-      [innerExpressionId, [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 132, 132, 144, 161, 100]],
-    ]),
+    widthsById: applicationRiskScoreWidthsById,
   },
 };

@@ -119,6 +119,15 @@ export const postBureauAffordabilityExpression: InvocationExpressionDefinition =
   ],
 };
 
+export const postBureauAffordabilityWidthsById = new Map<string, number[]>([
+  ["_1E880009-77B2-4309-AE2A-8964E05636B1", [180, 300]],
+  ["_FAD12087-C2B6-4060-840B-077972DCCB80", [300]],
+  ["_79F0E706-6018-49AB-86EB-78AC55582CE7", [300]],
+  ["_A541AA7D-2DE8-4E04-B5C9-0320EE7D26BE", [300]],
+  ["_9C3C6ED5-F875-4C5B-A7C1-76D10DC2E5DF", [300]],
+  ["_656110E9-A234-46A4-B4CF-7FD691F8F565", [300]],
+]);
+
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Expression: Story = {
   render: (args) => BoxedExpressionEditorWrapper(),
@@ -129,5 +138,6 @@ export const Expression: Story = {
     beeGwtService,
     pmmlDocuments,
     isResetSupportedOnRootExpression: false,
+    widthsById: postBureauAffordabilityWidthsById,
   },
 };
