@@ -123,8 +123,14 @@ export const ExpressionContainer: React.FunctionComponent<ExpressionContainerPro
     (newExpression: ListExpressionDefinition) => {
       const items = newExpression.expression ?? [];
       for (const item of items) {
-        // The name is not relevant here because ListExpression does not declare variables, so we're reusing ID.
-        variables?.repository.addVariableToContext(item["@_id"]!, item["@_id"]!, newExpression["@_id"]!);
+        if (item) {
+          // The name is not relevant here because ListExpression does not declare variables, so we're reusing ID.
+          variables?.repository.addVariableToContext(
+            item["@_id"] ?? "",
+            item["@_id"] ?? "",
+            newExpression["@_id"] ?? ""
+          );
+        }
       }
     },
     [variables?.repository]
