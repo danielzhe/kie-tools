@@ -103,7 +103,39 @@ export function DecisionTableExpression(
   const { setExpression, setWidth } = useBoxedExpressionEditorDispatch();
 
   const widths = useMemo(() => {
-    return widthsById.get(decisionTableExpression["@_id"]!) ?? [];
+    const expressionWidths = widthsById.get(decisionTableExpression["@_id"]!) ?? [];
+    if (expressionWidths.length === 0) {
+      expressionWidths.push(BEE_TABLE_ROW_INDEX_COLUMN_WIDTH);
+    }
+
+    let currentWidthGroupIndex = 1;
+    if (decisionTableExpression.input) {
+      for (let i = 0; i < decisionTableExpression.input.length; i++) {
+        if (expressionWidths.length >= i + currentWidthGroupIndex) {
+          expressionWidths.push(DECISION_TABLE_INPUT_DEFAULT_WIDTH);
+        }
+      }
+      currentWidthGroupIndex += decisionTableExpression.input.length;
+    }
+
+    if (decisionTableExpression.output) {
+      for (let i = 0; i < decisionTableExpression.output.length; i++) {
+        if (expressionWidths.length >= i + currentWidthGroupIndex) {
+          expressionWidths.push(DECISION_TABLE_OUTPUT_DEFAULT_WIDTH);
+        }
+      }
+      currentWidthGroupIndex += decisionTableExpression.output.length;
+    }
+
+    if (decisionTableExpression.annotation) {
+      for (let i = 0; i < decisionTableExpression.annotation.length; i++) {
+        if (expressionWidths.length >= i + currentWidthGroupIndex) {
+          expressionWidths.push(DECISION_TABLE_ANNOTATION_DEFAULT_WIDTH);
+        }
+      }
+    }
+
+    return expressionWidths;
   }, [decisionTableExpression, widthsById]);
 
   const getInputWidth = useCallback(
@@ -193,11 +225,12 @@ export function DecisionTableExpression(
 
       if (newWidth && inputWidth) {
         const values = [...widths];
+
         values.splice(inputWidth.index, 1, newWidth);
         setWidth({ id, values });
       }
     },
-    [id, getInputWidth, setWidth, widths]
+    [getInputWidth, widths, setWidth, id]
   );
 
   const setOutputColumnWidth = useCallback(
@@ -371,7 +404,11 @@ export function DecisionTableExpression(
   const beeTableRows = useMemo(
     () =>
       (decisionTableExpression.rule ?? []).map((rule) => {
-        const ruleRow = [...(rule.inputEntry ?? []), ...rule.outputEntry, ...(rule.annotationEntry ?? [])];
+        const ruleRow = [
+          ...(rule.inputEntry ?? []),
+          ...(rule.outputEntry ?? new Array(decisionTableExpression.output.length)),
+          ...(rule.annotationEntry ?? []),
+        ];
 
         const tableRow = getColumnsAtLastLevel(beeTableColumns).reduce(
           (tableRow: ROWTYPE, column, columnIndex) => {
@@ -409,8 +446,9 @@ export function DecisionTableExpression(
               break;
             case DecisionTableColumnType.OutputClause:
               const newOutputEntries = [...newRules[u.rowIndex].outputEntry];
-              newOutputEntries[u.columnIndex - (prev.input?.length ?? 0)] = {
-                ...newOutputEntries[u.columnIndex - (prev.input?.length ?? 0)],
+              const entryIndex = u.columnIndex - (prev.input?.length ?? 0);
+              newOutputEntries[entryIndex] = {
+                ...newOutputEntries[entryIndex],
                 text: {
                   __$$text: u.value,
                 },

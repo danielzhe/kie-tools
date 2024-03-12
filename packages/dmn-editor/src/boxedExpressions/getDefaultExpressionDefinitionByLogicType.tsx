@@ -299,7 +299,6 @@ export function getDefaultExpressionDefinitionByLogicType({
             text: { __$$text: DECISION_TABLE_INPUT_DEFAULT_VALUE },
           })),
           outputEntry: output.map(() => ({
-            __$$element: "literalExpression",
             "@_id": generateUuid(),
             text: { __$$text: DECISION_TABLE_OUTPUT_DEFAULT_VALUE },
           })),
