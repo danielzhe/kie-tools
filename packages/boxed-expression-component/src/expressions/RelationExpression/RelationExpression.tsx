@@ -38,6 +38,7 @@ import { useApportionedColumnWidthsIfNestedTable, useNestedTableLastColumnMinWid
 import { ResizerStopBehavior } from "../../resizing/ResizingWidthsContext";
 import {
   BEE_TABLE_ROW_INDEX_COLUMN_WIDTH,
+  DECISION_TABLE_INPUT_DEFAULT_WIDTH,
   RELATION_EXPRESSION_COLUMN_DEFAULT_WIDTH,
   RELATION_EXPRESSION_COLUMN_MIN_WIDTH,
 } from "../../resizing/WidthConstants";
@@ -100,7 +101,23 @@ export function RelationExpression(
     [i18n]
   );
 
-  const widths = useMemo(() => widthsById.get(id) ?? [], [id, widthsById]);
+  const widths = useMemo(() => {
+    const expressionWidths = widthsById.get(id) ?? [];
+
+    if (expressionWidths.length === 0) {
+      expressionWidths.push(BEE_TABLE_ROW_INDEX_COLUMN_WIDTH);
+    }
+
+    if (relationExpression.column) {
+      for (let i = 0; i < relationExpression.column?.length; i++) {
+        if (expressionWidths.length <= i + 1) {
+          expressionWidths.push(RELATION_EXPRESSION_COLUMN_DEFAULT_WIDTH);
+        }
+      }
+    }
+
+    return expressionWidths;
+  }, [id, relationExpression.column, widthsById]);
 
   const getColumnWidth = useCallback(
     (column: number) => {
@@ -173,22 +190,11 @@ export function RelationExpression(
           dataType: column["@_typeRef"] ?? "<Undefined>",
           isRowIndexColumn: false,
           minWidth: RELATION_EXPRESSION_COLUMN_MIN_WIDTH,
-          setWidth: setColumnWidth(columnIndex),
-          width: column.width ?? RELATION_EXPRESSION_COLUMN_MIN_WIDTH,
+          setWidth: setColumnWidth(columnIndex + 1),
+          width: widths[columnIndex + 1] ?? RELATION_EXPRESSION_COLUMN_MIN_WIDTH,
         })),
       },
     ];
-
-    // return columns.map((c) => {
-    //   return {
-    //     accessor: c["@_id"] as any, // FIXME: https://github.com/kiegroup/kie-issues/issues/169
-    //     label: c["@_name"] ?? DEFAULT_EXPRESSION_NAME,
-    //     dataType: c["@_typeRef"] ?? "<Undefined>",
-    //     isRowIndexColumn: false,
-    //     setColumnWidth,
-    //     width: undefined,
-    //   };
-    // });
   }, [columns, setColumnWidth]);
 
   const beeTableRows = useMemo<ROWTYPE[]>(
@@ -338,13 +344,15 @@ export function RelationExpression(
             "@_id": generateUuid(),
             "@_name": name,
             "@_typeRef": DmnBuiltInDataType.Undefined,
-            width: RELATION_EXPRESSION_COLUMN_DEFAULT_WIDTH,
           });
         }
 
         for (const newEntry of newItems) {
           let index = args.beforeIndex;
           newColumns.splice(index, 0, newEntry);
+
+          widths.splice(index + 1, 0, RELATION_EXPRESSION_COLUMN_DEFAULT_WIDTH);
+
           if (args.insertDirection === InsertRowColumnsDirection.BelowOrLeft) {
             index++;
           }
@@ -366,7 +374,7 @@ export function RelationExpression(
         };
       });
     },
-    [createCell, setExpression]
+    [createCell, setExpression, widths]
   );
 
   const onColumnDeleted = useCallback(
@@ -378,6 +386,7 @@ export function RelationExpression(
         const newRows = [...(prev.row ?? [])].map((row) => {
           const newCells = [...(row.expression ?? [])];
           newCells.splice(args.columnIndex, 1);
+          widths.splice(args.columnIndex + 1, 1);
           return {
             ...row,
             expression: newCells,

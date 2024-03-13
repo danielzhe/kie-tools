@@ -111,7 +111,7 @@ export function DecisionTableExpression(
     let currentWidthGroupIndex = 1;
     if (decisionTableExpression.input) {
       for (let i = 0; i < decisionTableExpression.input.length; i++) {
-        if (expressionWidths.length >= i + currentWidthGroupIndex) {
+        if (expressionWidths.length <= i + currentWidthGroupIndex) {
           expressionWidths.push(DECISION_TABLE_INPUT_DEFAULT_WIDTH);
         }
       }
@@ -120,7 +120,7 @@ export function DecisionTableExpression(
 
     if (decisionTableExpression.output) {
       for (let i = 0; i < decisionTableExpression.output.length; i++) {
-        if (expressionWidths.length >= i + currentWidthGroupIndex) {
+        if (expressionWidths.length <= i + currentWidthGroupIndex) {
           expressionWidths.push(DECISION_TABLE_OUTPUT_DEFAULT_WIDTH);
         }
       }
@@ -129,7 +129,7 @@ export function DecisionTableExpression(
 
     if (decisionTableExpression.annotation) {
       for (let i = 0; i < decisionTableExpression.annotation.length; i++) {
-        if (expressionWidths.length >= i + currentWidthGroupIndex) {
+        if (expressionWidths.length <= i + currentWidthGroupIndex) {
           expressionWidths.push(DECISION_TABLE_ANNOTATION_DEFAULT_WIDTH);
         }
       }
@@ -138,32 +138,48 @@ export function DecisionTableExpression(
     return expressionWidths;
   }, [decisionTableExpression, widthsById]);
 
+  const getInputIndexInTable = useCallback((localIndex: number) => {
+    return 1 + localIndex;
+  }, []);
+
+  const getOutputIndexInTable = useCallback(
+    (localIndex: number) => {
+      return 1 + (decisionTableExpression.input?.length ?? 0) + localIndex;
+    },
+    [decisionTableExpression.input?.length]
+  );
+
+  const getAnnotationIndexInTable = useCallback(
+    (localIndex: number) => {
+      return (
+        1 + (decisionTableExpression.input?.length ?? 0) + (decisionTableExpression.output?.length ?? 0) + localIndex
+      );
+    },
+    [decisionTableExpression.input?.length, decisionTableExpression.output?.length]
+  );
+
   const getInputWidth = useCallback(
     (inputIndex: number) => {
-      const index = 1 + inputIndex;
+      const index = getInputIndexInTable(inputIndex);
       return { index, width: widths[index] };
     },
-    [widths]
+    [getInputIndexInTable, widths]
   );
 
   const getOutputWidth = useCallback(
     (outputIndex: number) => {
-      const index = 1 + (decisionTableExpression.input?.length ?? 0) + outputIndex;
+      const index = getOutputIndexInTable(outputIndex);
       return { index, width: widths[index] };
     },
-    [decisionTableExpression.input?.length, widths]
+    [getOutputIndexInTable, widths]
   );
 
   const getAnnotationWidth = useCallback(
     (annotationIndex: number) => {
-      const index =
-        1 +
-        (decisionTableExpression.input?.length ?? 0) +
-        (decisionTableExpression.output?.length ?? 0) +
-        annotationIndex;
+      const index = getAnnotationIndexInTable(annotationIndex);
       return { index, width: widths[index] };
     },
-    [decisionTableExpression.input?.length, decisionTableExpression.output?.length, widths]
+    [getAnnotationIndexInTable, widths]
   );
 
   const generateOperationConfig = useCallback(
@@ -756,7 +772,7 @@ export function DecisionTableExpression(
             for (const newEntry of newInputClauses) {
               let index = args.beforeIndex;
               newInputs.splice(index, 0, newEntry);
-              widths.splice(index, 0, DECISION_TABLE_INPUT_DEFAULT_WIDTH);
+              widths.splice(getInputIndexInTable(index), 0, DECISION_TABLE_INPUT_DEFAULT_WIDTH);
               if (args.insertDirection === InsertRowColumnsDirection.BelowOrLeft) {
                 index++;
               }
@@ -808,7 +824,9 @@ export function DecisionTableExpression(
             for (const newEntry of newOutputClauses) {
               let index = args.beforeIndex;
               newOutputs.splice(index, 0, newEntry);
-              widths.splice(index, 0, DECISION_TABLE_OUTPUT_DEFAULT_WIDTH);
+
+              widths.splice(getOutputIndexInTable(index), 0, DECISION_TABLE_OUTPUT_DEFAULT_WIDTH);
+
               if (args.insertDirection === InsertRowColumnsDirection.BelowOrLeft) {
                 index++;
               }
@@ -857,7 +875,7 @@ export function DecisionTableExpression(
             for (const newEntry of newAnnotationsItems) {
               let index = args.beforeIndex;
               newAnnotations.splice(index, 0, newEntry);
-              widths.splice(index, 0, DECISION_TABLE_ANNOTATION_DEFAULT_WIDTH);
+              widths.splice(getAnnotationIndexInTable(index), 0, DECISION_TABLE_ANNOTATION_DEFAULT_WIDTH);
               if (args.insertDirection === InsertRowColumnsDirection.BelowOrLeft) {
                 index++;
               }
@@ -893,6 +911,7 @@ export function DecisionTableExpression(
     [decisionTableExpression.parentElementId, getSectionIndexForGroupType, setExpression, variables?.repository, widths]
   );
 
+  // FIXME: widths quando deleta
   const onColumnDeleted = useCallback(
     (args: { columnIndex: number; groupType: DecisionTableColumnType }) => {
       setExpression((prev: DecisionTableExpressionDefinition) => {
