@@ -74,7 +74,13 @@ export function InvocationExpression(
 
   const id = invocationExpression["@_id"]!;
 
-  const widths = useMemo(() => widthsById.get(id) ?? [], [id, widthsById]);
+  const widths = useMemo(() => {
+    const expressionWidths = widthsById.get(id) ?? [];
+    if (expressionWidths.length === 0) {
+      expressionWidths.push(INVOCATION_PARAMETER_MIN_WIDTH, INVOCATION_ARGUMENT_EXPRESSION_MIN_WIDTH);
+    }
+    return expressionWidths;
+  }, [id, widthsById]);
 
   const parametersWidth = useMemo(
     () => widths?.[INVOCATION_PARAMETER_INFO_WIDTH_INDEX] ?? INVOCATION_PARAMETER_MIN_WIDTH,
@@ -203,9 +209,11 @@ export function InvocationExpression(
         if (u.column.originalId === "functionName") {
           setExpression((prev: InvocationExpressionDefinition) => ({
             ...prev,
-            invokedFunction: {
-              id: prev.expression?.["@_id"] ?? "<id>",
-              name: u.name,
+            expression: {
+              __$$element: "literalExpression",
+              text: {
+                __$$text: u.name,
+              },
             },
           }));
         } else {

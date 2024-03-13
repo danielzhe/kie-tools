@@ -62,7 +62,13 @@ export const ContextEntryInfoCell: React.FunctionComponent<ContextEntryInfoCellP
       onEntryUpdate(rowIndex, {
         ...entry,
         // entryExpression and entryInfo must always have the same `dataType` and `name`, as those are dictated by the entryInfo.
-        expression: { ...entryExpression, "@_label": name, "@_typeRef": dataType } as ExpressionDefinition,
+        expression: entryExpression
+          ? ({
+              ...entryExpression,
+              "@_label": name,
+              "@_typeRef": dataType,
+            } as ExpressionDefinition)
+          : entryExpression,
         variable: { ...entryInfo, "@_name": name, "@_typeRef": dataType },
       });
     },
