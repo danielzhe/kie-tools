@@ -172,7 +172,7 @@ export const employeesExpression: RelationExpressionDefinition = {
 };
 
 export const employeesWidthsById = new Map<string, number[]>([
-  ["_03E4FDF0-AF4A-4C82-A589-2F9BED02921B", [100, 156, 150, 252, 100]],
+  ["_03E4FDF0-AF4A-4C82-A589-2F9BED02921B", [BEE_TABLE_ROW_INDEX_COLUMN_WIDTH, 100, 156, 150, 252, 100]],
 ]);
 
 export const findEmployeesByKnowledgeExpression: FunctionExpressionDefinition = {
