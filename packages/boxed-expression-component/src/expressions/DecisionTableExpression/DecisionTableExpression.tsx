@@ -130,7 +130,7 @@ export function DecisionTableExpression(
     if (decisionTableExpression.annotation) {
       for (let i = 0; i < decisionTableExpression.annotation.length; i++) {
         if (expressionWidths.length <= i + currentWidthGroupIndex) {
-          expressionWidths.push(DECISION_TABLE_ANNOTATION_DEFAULT_WIDTH);
+          expressionWidths.push(DECISION_TABLE_ANNOTATION_MIN_WIDTH);
         }
       }
     }
