@@ -202,7 +202,7 @@ export function getExpressionResizingWidth(
     return (
       resizingWidth ??
       columns.reduce((acc, c, currentIndex) => {
-        return acc + (getWidthAt(currentIndex, expressionWidth) ?? RELATION_EXPRESSION_COLUMN_MIN_WIDTH);
+        return acc + (getWidthAt(currentIndex + 1, expressionWidth) ?? RELATION_EXPRESSION_COLUMN_MIN_WIDTH);
       }, BEE_TABLE_ROW_INDEX_COLUMN_WIDTH)
     );
   } else if (expression.__$$element === "decisionTable") {
@@ -211,7 +211,7 @@ export function getExpressionResizingWidth(
     return (
       resizingWidth ??
       columns.reduce((acc, c, currentIndex) => {
-        return acc + (getWidthAt(currentIndex, expressionWidth) ?? RELATION_EXPRESSION_COLUMN_MIN_WIDTH);
+        return acc + (getWidthAt(currentIndex + 1, expressionWidth) ?? RELATION_EXPRESSION_COLUMN_MIN_WIDTH);
       }, BEE_TABLE_ROW_INDEX_COLUMN_WIDTH)
     );
   }
