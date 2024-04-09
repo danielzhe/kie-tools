@@ -59,6 +59,8 @@ export interface BoxedExpressionEditorWrapperProps {
   boxedExpressionEditorRootNode: Element | null;
   /** The DMN XML */
   dmnXml: string;
+  /** A boolean used to hide DMN 1.4 expressions. */
+  hideDmn14BoxedExpressions?: boolean;
 }
 
 const BoxedExpressionEditorWrapper: React.FunctionComponent<BoxedExpressionEditorWrapperProps> = ({
@@ -69,6 +71,7 @@ const BoxedExpressionEditorWrapper: React.FunctionComponent<BoxedExpressionEdito
   pmmlDocuments,
   boxedExpressionEditorRootNode,
   dmnXml,
+  hideDmn14BoxedExpressions,
 }) => {
   const [expressionWrapper, setExpressionWrapper] = useState<{
     source: "gwt" | "react";
@@ -193,7 +196,7 @@ const BoxedExpressionEditorWrapper: React.FunctionComponent<BoxedExpressionEdito
       scrollableParentRef={emptyRef}
       beeGwtService={beeGwtService}
       expressionHolderId={expressionHolderId}
-      expressionHolderName={expressionWrapper.expression["@_label"] || ""}
+      expressionHolderName={expressionWrapper.expression?.["@_label"] || ""}
       expressionHolderTypeRef={expressionWrapper.expression?.["@_typeRef"] || DmnBuiltInDataType.Undefined}
       dataTypes={dataTypes}
       isResetSupportedOnRootExpression={isResetSupportedOnRootExpression}
@@ -203,6 +206,7 @@ const BoxedExpressionEditorWrapper: React.FunctionComponent<BoxedExpressionEdito
       onExpressionChange={setExpressionNotifyingUserAction}
       widthsById={expressionWrapper.widthsById}
       onWidthsChange={setWidthsByIdNotifyingUserAction}
+      hideDmn14BoxedExpressions={hideDmn14BoxedExpressions}
     />
   );
 };
@@ -214,7 +218,8 @@ const renderBoxedExpressionEditor = (
   dataTypes: DmnDataType[],
   isResetSupportedOnRootExpression: boolean,
   pmmlDocuments: PmmlDocument[],
-  dmnXml: string
+  dmnXml: string,
+  hideDmn14BoxedExpressions: boolean
 ) => {
   const boxedExpressionEditorRootNode = document.querySelector(selector);
   ReactDOM.render(
@@ -226,6 +231,7 @@ const renderBoxedExpressionEditor = (
       pmmlDocuments={pmmlDocuments}
       boxedExpressionEditorRootNode={boxedExpressionEditorRootNode}
       dmnXml={dmnXml}
+      hideDmn14BoxedExpressions={hideDmn14BoxedExpressions}
     />,
     boxedExpressionEditorRootNode
   );
