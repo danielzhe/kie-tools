@@ -45,6 +45,7 @@ import {
 import { FilterExpressionCollectionCell } from "./FilterExpressionCollectionCell";
 import { FilterExpressionMatchCell } from "./FilterExpressionMatchCell";
 import "./FilterExpression.css";
+import { getExpressionTotalMinWidth } from "../../resizing/WidthMaths";
 
 export type ROWTYPE = Normalized<DMN15__tChildExpression>;
 
@@ -111,12 +112,23 @@ export function FilterExpressionComponent({
   const { nestedExpressionContainerValue, onColumnResizingWidthChange } =
     useNestedExpressionContainerWithNestedExpressions(
       useMemo(() => {
+        const nestedExpressions = [filterExpression.in.expression, filterExpression.match.expression].map(
+          (b) => b ?? undefined!
+        );
+
+        const maxNestedExpressionTotalMinWidth = Math.max(
+          ...nestedExpressions.map(
+            (e) => getExpressionTotalMinWidth(0, e, widthsById) + FILTER_EXPRESSION_MATCH_ROW_EXTRA_WIDTH
+          ),
+          FILTER_EXPRESSION_MIN_WIDTH
+        );
+
         return {
           nestedExpressions: [filterExpression.in.expression, filterExpression.match.expression],
           fixedColumnActualWidth: 0,
           fixedColumnResizingWidth: { value: 0, isPivoting: false },
           fixedColumnMinWidth: 0,
-          nestedExpressionMinWidth: FILTER_EXPRESSION_MIN_WIDTH,
+          nestedExpressionMinWidth: maxNestedExpressionTotalMinWidth,
           extraWidth: FILTER_EXPRESSION_EXTRA_WIDTH,
           expression: filterExpression,
           flexibleColumnIndex: 1,

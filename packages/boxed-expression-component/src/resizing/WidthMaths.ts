@@ -207,7 +207,8 @@ export function getExpressionTotalMinWidth(
       currentWidth +
       (getWidthAt(CONTEXT_ENTRY_VARIABLE_COLUMN_WIDTH_INDEX, widthsById, expression["@_id"]) ??
         CONTEXT_ENTRY_VARIABLE_MIN_WIDTH) +
-      CONTEXT_EXPRESSION_EXTRA_WIDTH;
+      CONTEXT_EXPRESSION_EXTRA_WIDTH +
+      CONTEXT_ENTRY_EXPRESSION_MIN_WIDTH;
     const contextEntriesMaxWidth = (expression.contextEntry ?? []).reduce(
       (maxWidth, currentExpression) =>
         Math.max(maxWidth, getExpressionTotalMinWidth(width, currentExpression.expression, widthsById)),

@@ -42,6 +42,7 @@ import {
   DECISION_TABLE_OUTPUT_DEFAULT_WIDTH,
   LITERAL_EXPRESSION_MIN_WIDTH,
   RELATION_EXPRESSION_COLUMN_DEFAULT_WIDTH,
+  CONTEXT_ENTRY_EXPRESSION_MIN_WIDTH,
 } from "@kie-tools/boxed-expression-component/dist/resizing/WidthConstants";
 import {
   DECISION_TABLE_INPUT_DEFAULT_VALUE,
@@ -144,7 +145,7 @@ export function getDefaultBoxedExpression({
       contextEntry: contextEntries,
     };
 
-    widthsById.set(contextExpression["@_id"]!, [maxWidthBasedOnEntryNames]);
+    widthsById.set(contextExpression["@_id"]!, [maxWidthBasedOnEntryNames, CONTEXT_ENTRY_EXPRESSION_MIN_WIDTH]);
     return contextExpression;
   } else if (logicType === "list") {
     const listExpression: Normalized<BoxedList> = {
