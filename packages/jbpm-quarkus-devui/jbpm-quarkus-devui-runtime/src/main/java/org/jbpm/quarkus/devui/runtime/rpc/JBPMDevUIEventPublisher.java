@@ -19,6 +19,7 @@
 
  package org.jbpm.quarkus.devui.runtime.rpc;
  import jakarta.enterprise.context.ApplicationScoped;
+ import jakarta.enterprise.inject.Default;
  import org.kie.kogito.event.DataEvent;
  import org.kie.kogito.event.EventPublisher;
  import org.slf4j.Logger;
@@ -30,14 +31,14 @@
  import java.util.Objects;
  
  @ApplicationScoped
- @IfBuildProfile("dev")
+ @Default
  public class JBPMDevUIEventPublisher implements EventPublisher {
  
      private static final Logger LOGGER = LoggerFactory.getLogger(JBPMDevUIEventPublisher.class);
      private Runnable onProcessEvent;
      private Runnable onTaskEvent;
      private Runnable onJobEvent;
- 
+
      @Override
      public void publish(DataEvent<?> event) {
          switch (event.getType()) {

@@ -28,7 +28,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ApplicationScoped
 public class DataIndexCounter {
     private static final String DATA_INDEX_URL = "kogito.data-index.url";
     private static final Logger LOGGER = LoggerFactory.getLogger(DataIndexCounter.class);
