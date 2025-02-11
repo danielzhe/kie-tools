@@ -116,7 +116,7 @@ export function ListExpression({
   const beeTableRows = useMemo(() => {
     const rows = (listExpression.expression ?? []).map((item) => ({
       "@_id": generateUuid(),
-      expression: item,
+      expression: item?.__$$element === undefined ? undefined! : item,
     }));
 
     if (rows.length === 0) {
