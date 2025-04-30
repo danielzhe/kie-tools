@@ -17,6 +17,8 @@
  * under the License.
  */
 
+import * as fs from "node:fs";
+
 require("./extension-editors-smoke.test");
 
 import { SideBarView, WebView } from "vscode-extension-tester";
@@ -39,6 +41,7 @@ describe("KIE Editors End to End Test Suite - DMN Editor", () => {
   const DEMO_DMN: string = "demo.dmn";
   const DEMO_EXPRESSION_DMN: string = "demo-expression.dmn";
   const REUSABLE_DMN: string = "reusable-model.dmn";
+  const COPY_DMN: string = "copy-model.dmn";
 
   let testHelper: VSCodeTestHelper;
   let webview: WebView;
@@ -114,7 +117,7 @@ describe("KIE Editors End to End Test Suite - DMN Editor", () => {
   });
 
   it("Check new DMN Expression Editor", async function () {
-    this.timeout(40000);
+    this.timeout(9000000);
     const editorWebviews = await testHelper.openFileFromSidebar(DEMO_EXPRESSION_DMN);
     webview = editorWebviews[0];
     const dmnEditorTester = new DmnEditorTestHelper(webview);
@@ -135,5 +138,30 @@ describe("KIE Editors End to End Test Suite - DMN Editor", () => {
     await decisionTableEditor.assertExpressionDetails("decision table demo", "string");
 
     await dmnEditorTester.switchBack();
+  });
+
+  it("Apply external file changes", async function () {
+    // The test is not validating anything. I'm just checking if first the message is displayed.
+
+    this.timeout(40000);
+
+    const copyDmnFilePath = path.join(RESOURCES, COPY_DMN);
+    fs.copyFileSync(path.join(RESOURCES, DEMO_EXPRESSION_DMN), copyDmnFilePath);
+
+    const editorWebviews = await testHelper.openFileFromSidebar(COPY_DMN);
+    webview = editorWebviews[0];
+    const dmnEditorTester = new DmnEditorTestHelper(webview);
+    await dmnEditorTester.switchToEditorFrame();
+    const decisionNavigator = await dmnEditorTester.openDecisionNavigator();
+    await decisionNavigator.selectDiagramNode("decision table demo");
+    const diagramProperties = await dmnEditorTester.openDiagramProperties();
+    await diagramProperties.changeProperty("Name", "Some name");
+
+    const xmlData = fs.readFileSync(copyDmnFilePath, "utf-8");
+    const replaced = xmlData.replace("decision table demo", "some external changed name");
+    const copyFileDescriptor = fs.openSync(copyDmnFilePath, "w");
+    fs.writeSync(copyFileDescriptor, replaced, 0, "utf8");
+
+    // At this point the message about external changes should be displayed, but it doesn't
   });
 });

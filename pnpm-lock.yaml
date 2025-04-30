@@ -6875,6 +6875,9 @@ importers:
       webpack-merge:
         specifier: ^5.9.0
         version: 5.9.0
+      xml2js:
+        specifier: ^0.6.2
+        version: 0.6.2
 
   packages/kie-editors-standalone:
     devDependencies:
@@ -31250,6 +31253,10 @@ packages:
 
   xml2js@0.5.0:
     resolution: {integrity: sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==}
+    engines: {node: '>=4.0.0'}
+
+  xml2js@0.6.2:
+    resolution: {integrity: sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==}
     engines: {node: '>=4.0.0'}
 
   xml@1.0.1:
@@ -59200,6 +59207,11 @@ snapshots:
   xml-name-validator@4.0.0: {}
 
   xml2js@0.5.0:
+    dependencies:
+      sax: 1.2.4
+      xmlbuilder: 11.0.1
+
+  xml2js@0.6.2:
     dependencies:
       sax: 1.2.4
       xmlbuilder: 11.0.1
